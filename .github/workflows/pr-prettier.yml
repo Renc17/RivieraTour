@@ -1,0 +1,19 @@
+name: Prettier Action
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+
+jobs:
+  prettier-check:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - uses: creyD/prettier_action@v4.0
+        with:
+          prettier_options: '**/*.ts --check'
+          only_changed: true
