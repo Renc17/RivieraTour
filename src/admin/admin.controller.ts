@@ -1,7 +1,18 @@
-import { Body, Controller, HttpStatus, Post, Res } from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    HttpStatus,
+    Post,
+    Put,
+    Req,
+    Res,
+    UseGuards
+} from '@nestjs/common';
 import { AdminService } from './admin.service';
 import { LoginAdminDto } from './dto/login-admin-dto';
 import { Response } from 'express';
+import { AuthGuard } from 'src/shared/guard/auth.guard';
+import { ChangePasswordDto } from './dto/change-password-dto';
 
 @Controller('admin')
 export class AdminController {
@@ -16,5 +27,24 @@ export class AdminController {
         }
 
         return res.status(HttpStatus.OK).send(response);
+    }
+
+    @UseGuards(AuthGuard)
+    @Put('password')
+    async changePassword(
+        @Req() req: any,
+        @Res() res: Response,
+        @Body() body: ChangePasswordDto
+    ) {
+        const status = this.adminService.changePassword(
+            req.user,
+            body.password
+        );
+
+        if (!status) {
+            return res.status(HttpStatus.BAD_REQUEST).send();
+        }
+
+        return res.status(HttpStatus.OK).send();
     }
 }

@@ -1,11 +1,18 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
+import { Admin } from '@prisma/client';
 import * as jwt from 'jsonwebtoken';
+import * as bcrypt from 'bcrypt';
+import { PrismaService } from 'src/prisma.service';
 import { AuthService } from 'src/shared/auth/auth.service';
 import { LoginAdminDto } from './dto/login-admin-dto';
+import { SECRET_TOKEN } from 'config';
 
 @Injectable()
 export class AdminService {
-    constructor(private authService: AuthService) {}
+    constructor(
+        private authService: AuthService,
+        private prisma: PrismaService
+    ) {}
 
     async login(user: LoginAdminDto) {
         const validUser = await this.authService.validateCredentials(
@@ -21,7 +28,7 @@ export class AdminService {
                         id: validUser.id,
                         email: validUser.email
                     },
-                    process.env.SECRET_TOKEN,
+                    SECRET_TOKEN,
                     { expiresIn: '1 hour' }
                 )
             };
@@ -34,5 +41,25 @@ export class AdminService {
                 }
             };
         }
+    }
+
+    async changePassword(user: Admin, password: string) {
+        const admin = await this.prisma.admin.findUnique({
+            where: {
+                id: user.id
+            }
+        });
+
+        if (!admin) {
+            throw new HttpException('Email is not correct', 401);
+        }
+
+        const hash = await bcrypt.hash(password, 13);
+        return await this.prisma.admin.update({
+            where: { id: user.id },
+            data: {
+                password: hash
+            }
+        });
     }
 }
