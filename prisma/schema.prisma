@@ -27,3 +27,10 @@ model Booking {
   seats         Int
   price         String  @db.VarChar(10)
 }
+
+model Tours {
+  id            String  @id @default(uuid())
+  name          String  @db.VarChar(100)
+  capacity      Int
+  left          Int
+}
