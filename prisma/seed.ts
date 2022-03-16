@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import { password } from '../config';
 import * as bcrypt from 'bcrypt';
+import { randomUUID } from 'crypto';
 const prisma = new PrismaClient();
 
 async function main() {
@@ -15,6 +16,10 @@ async function main() {
             password: hash
         }
     });
+
+    // await prisma.tours.upsert({
+    //     where: { id: randomUUID() }
+    // });
 }
 
 main()
