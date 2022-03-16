@@ -2,18 +2,17 @@ import { HttpException, Injectable } from '@nestjs/common';
 import { monthsEnum } from 'src/enums/monthsEnum';
 import { ChildrenPrice, NormalPriceEnum } from 'src/enums/pricesEnum';
 import { PrismaService } from 'src/prisma.service';
+import { ToursService } from 'src/tours/tours.service';
 import { AddBookingDto } from './dto/add-booking-dto';
 
 @Injectable()
 export class BookingService {
-    constructor(private prisma: PrismaService) {}
+    constructor(
+        private prisma: PrismaService,
+        private tourService: ToursService
+    ) {}
 
-    async book(tourId: string, client: AddBookingDto) {
-        // find tour
-        // check if exists
-
-        // book tickets on tour, occupy seats
-
+    async book(client: AddBookingDto) {
         if (!Object.values(monthsEnum).includes(client.date.month)) {
             throw new HttpException(
                 client.date.month + ' Not Found: date is not available',
@@ -21,11 +20,13 @@ export class BookingService {
             );
         }
         const price = this.calculatePrice(client);
+        const seats = client.adults + client.children;
+        await this.tourService.bookSeats(client.tourId, seats);
         return await this.prisma.booking.create({
             data: {
                 name: client.name,
                 email: client.email,
-                seats: client.adults + client.children,
+                seats: seats,
                 message: client.message,
                 price: price.toString()
             }
