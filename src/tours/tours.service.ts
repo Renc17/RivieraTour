@@ -30,6 +30,18 @@ export class ToursService {
         });
     }
 
+    async bookSeats(tourId: string, seats: number) {
+        const foundTour = await this.findOne(tourId);
+        if (!foundTour) {
+            throw new HttpException('Tour Not Found', 404);
+        }
+
+        return await this.prisma.tours.update({
+            where: { id: tourId },
+            data: { left: foundTour.capacity - seats }
+        });
+    }
+
     private async findOne(tourId) {
         return await this.prisma.tours.findUnique({
             where: {
