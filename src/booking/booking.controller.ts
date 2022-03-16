@@ -6,9 +6,9 @@ import { AddBookingDto } from './dto/add-booking-dto';
 export class BookingController {
     constructor(private bookingService: BookingService) {}
 
-    @Post('tour/:id')
-    async book(@Body() clientInfo: AddBookingDto, @Param('id') tourId: string) {
-        return await this.bookingService.book(tourId, clientInfo);
+    @Post('tour')
+    async book(@Body() clientInfo: AddBookingDto) {
+        return await this.bookingService.book(clientInfo);
     }
 
     @Delete('cancel/:id')

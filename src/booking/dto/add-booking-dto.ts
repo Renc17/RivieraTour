@@ -3,7 +3,7 @@ import { TourDatesDto } from './tour-dates-dto';
 
 export class AddBookingDto {
     @IsNotEmpty()
-    tour: string;
+    tourId: string;
 
     @IsNotEmpty()
     @IsEmail()
