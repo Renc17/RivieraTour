@@ -1,6 +1,7 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { monthsEnum } from 'src/enums/monthsEnum';
 import { ChildrenPrice, NormalPriceEnum } from 'src/enums/pricesEnum';
+import { MailService } from 'src/mail/mail.service';
 import { PrismaService } from 'src/prisma.service';
 import { ToursService } from 'src/tours/tours.service';
 import { AddBookingDto } from './dto/add-booking-dto';
@@ -9,7 +10,8 @@ import { AddBookingDto } from './dto/add-booking-dto';
 export class BookingService {
     constructor(
         private prisma: PrismaService,
-        private tourService: ToursService
+        private tourService: ToursService,
+        private mailService: MailService
     ) {}
 
     async book(client: AddBookingDto) {
@@ -19,18 +21,25 @@ export class BookingService {
                 404
             );
         }
-        const price = this.calculatePrice(client);
+        const price = this.calculatePrice(client).toString();
         const seats = client.adults + client.children;
         await this.tourService.bookSeats(client.tourId, seats);
-        return await this.prisma.booking.create({
+        const bookingDetails = await this.prisma.booking.create({
             data: {
                 name: client.name,
                 email: client.email,
                 seats: seats,
                 message: client.message,
-                price: price.toString()
+                price: price
             }
         });
+
+        await this.mailService.sendUserConfirmation({
+            ...client,
+            price,
+            seats
+        });
+        return bookingDetails;
     }
 
     async cancel(bookingId: string) {

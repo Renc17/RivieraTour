@@ -21,7 +21,7 @@ model Admin {
 
 model Booking {
   id            String  @id @default(uuid())
-  email         String  @unique
+  email         String  @db.VarChar(100)
   name          String  @db.VarChar(100)
   message       String?  @db.VarChar(200)
   seats         Int
