@@ -33,4 +33,10 @@ export class BookingController {
     async getBookings() {
         return await this.bookingService.getAll();
     }
+
+    @Get('myBookings')
+    @UseGuards(ClientAuthGuard)
+    async getMyBookings(@Req() req: any) {
+        return await this.bookingService.getAllMine(req.user.id);
+    }
 }

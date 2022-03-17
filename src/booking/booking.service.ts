@@ -1,5 +1,4 @@
 import { HttpException, Injectable } from '@nestjs/common';
-import { Admin } from '@prisma/client';
 import { monthsEnum } from 'src/enums/monthsEnum';
 import { ChildrenPrice, NormalPriceEnum } from 'src/enums/pricesEnum';
 import { MailService } from 'src/mail/mail.service';
@@ -88,6 +87,17 @@ export class BookingService {
                         email: true
                     }
                 }
+            }
+        });
+    }
+
+    async getAllMine(clientId: string) {
+        return await this.prisma.booking.findMany({
+            orderBy: {
+                createdAt: 'desc'
+            },
+            where: {
+                clientId: clientId
             }
         });
     }
