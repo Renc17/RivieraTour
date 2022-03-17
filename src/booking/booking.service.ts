@@ -30,7 +30,9 @@ export class BookingService {
                 email: client.email,
                 seats: seats,
                 message: client.message,
-                price: price
+                price: price,
+
+                clientId: client.clientId
             }
         });
 

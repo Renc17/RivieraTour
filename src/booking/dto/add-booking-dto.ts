@@ -6,6 +6,9 @@ export class AddBookingDto {
     tourId: string;
 
     @IsNotEmpty()
+    clientId: string;
+
+    @IsNotEmpty()
     @IsEmail()
     email: string;
 
