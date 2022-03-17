@@ -1,4 +1,5 @@
 import { HttpException, Injectable } from '@nestjs/common';
+import { Admin } from '@prisma/client';
 import { monthsEnum } from 'src/enums/monthsEnum';
 import { ChildrenPrice, NormalPriceEnum } from 'src/enums/pricesEnum';
 import { MailService } from 'src/mail/mail.service';
@@ -14,7 +15,7 @@ export class BookingService {
         private mailService: MailService
     ) {}
 
-    async book(client: AddBookingDto) {
+    async book(client: AddBookingDto, clientId: string) {
         if (!Object.values(monthsEnum).includes(client.date.month)) {
             throw new HttpException(
                 client.date.month + ' Not Found: date is not available',
@@ -32,7 +33,7 @@ export class BookingService {
                 message: client.message,
                 price: price,
 
-                clientId: client.clientId
+                clientId: clientId
             }
         });
 
@@ -73,6 +74,22 @@ export class BookingService {
         const childrenPrice = client.children * pricePerChild;
 
         return adultPrice + childrenPrice;
+    }
+
+    async getAll() {
+        return await this.prisma.booking.findMany({
+            orderBy: {
+                createdAt: 'desc'
+            },
+            include: {
+                client: {
+                    select: {
+                        username: true,
+                        email: true
+                    }
+                }
+            }
+        });
     }
 
     private async findOne(bookingId) {
