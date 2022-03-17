@@ -39,6 +39,8 @@ model Booking {
   seats         Int
   price         String  @db.VarChar(10)
 
+  createdAt     DateTime @default(now())
+
   client        Client @relation(fields: [clientId], references: [id])
   clientId      String
 }
