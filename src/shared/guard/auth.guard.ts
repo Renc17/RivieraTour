@@ -45,8 +45,6 @@ export class AuthGuard implements CanActivate {
             throw new HttpException(err, 401);
         });
 
-        console.log(user);
-
         if (user.role != Role.ADMIN) {
             throw new HttpException('Access Forbidden', HttpStatus.FORBIDDEN);
         }
