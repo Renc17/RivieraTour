@@ -31,10 +31,6 @@ export class AuthGuard implements CanActivate {
     }
 
     private async validateRequest(request: any) {
-        if (request.role !== Role.ADMIN) {
-            throw new HttpException('Access Forbidden', HttpStatus.FORBIDDEN);
-        }
-
         if (!request.headers.authorization) {
             throw new HttpException('No token provided', 401);
         }
@@ -48,6 +44,12 @@ export class AuthGuard implements CanActivate {
         const user = await this.verifyToken(authToken).catch((err) => {
             throw new HttpException(err, 401);
         });
+
+        console.log(user);
+
+        if (user.role != Role.ADMIN) {
+            throw new HttpException('Access Forbidden', HttpStatus.FORBIDDEN);
+        }
 
         const found = await this.prisma.admin.findUnique({
             where: {
