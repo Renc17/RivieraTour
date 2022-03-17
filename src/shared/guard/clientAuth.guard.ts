@@ -11,7 +11,7 @@ import { SECRET_TOKEN } from 'config';
 import { Role } from './enums/role.enum';
 
 @Injectable()
-export class AuthGuard implements CanActivate {
+export class ClientAuthGuard implements CanActivate {
     constructor(private prisma: PrismaService) {}
 
     canActivate(context: ExecutionContext): Promise<boolean> {
@@ -31,7 +31,7 @@ export class AuthGuard implements CanActivate {
     }
 
     private async validateRequest(request: any) {
-        if (request.role !== Role.ADMIN) {
+        if (request.role !== Role.CLIENT) {
             throw new HttpException('Access Forbidden', HttpStatus.FORBIDDEN);
         }
 
@@ -49,14 +49,14 @@ export class AuthGuard implements CanActivate {
             throw new HttpException(err, 401);
         });
 
-        const found = await this.prisma.admin.findUnique({
+        const found = await this.prisma.client.findUnique({
             where: {
                 id: user.id
             }
         });
 
         if (!found) {
-            throw new HttpException('Admin Not Found', 404);
+            throw new HttpException('Client Not Found', 404);
         }
 
         request.user = {

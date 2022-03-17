@@ -26,7 +26,8 @@ export class AdminService {
                     {
                         username: validUser.username,
                         id: validUser.id,
-                        email: validUser.email
+                        email: validUser.email,
+                        role: 'ADMIN'
                     },
                     SECRET_TOKEN,
                     { expiresIn: '1 hour' }
