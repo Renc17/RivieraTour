@@ -55,7 +55,8 @@ export class AccountService {
                     {
                         username: validUser.username,
                         id: validUser.id,
-                        email: validUser.email
+                        email: validUser.email,
+                        role: 'CLIENT'
                     },
                     SECRET_TOKEN,
                     { expiresIn: '1 hour' }
