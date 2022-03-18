@@ -4,8 +4,6 @@ import { AddClientDto } from './dto/add-client-dto';
 import { Response } from 'express';
 import { LoginClientDto } from './dto/login-client-dto';
 
-// TODO: add authGuard for client accounts
-
 @Controller('account')
 export class AccountController {
     constructor(private accountService: AccountService) {}
