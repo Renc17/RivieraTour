@@ -23,6 +23,7 @@ export class BookingService {
         }
         const price = this.calculatePrice(client).toString();
         const seats = client.adults + client.children;
+        // TODO: Check if there are free seats left
         await this.tourService.bookSeats(client.tourId, seats);
         const bookingDetails = await this.prisma.booking.create({
             data: {
