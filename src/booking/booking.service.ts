@@ -3,46 +3,57 @@ import { monthsEnum } from 'src/enums/monthsEnum';
 import { ChildrenPrice, NormalPriceEnum } from 'src/enums/pricesEnum';
 import { MailService } from 'src/mail/mail.service';
 import { PrismaService } from 'src/prisma.service';
+import { StripeService } from 'src/shared/stripe/stripe.service';
 import { ToursService } from 'src/tours/tours.service';
 import { AddBookingDto } from './dto/add-booking-dto';
+import { UserPaylodDto } from './dto/user-payload-dto';
 
 @Injectable()
 export class BookingService {
     constructor(
         private prisma: PrismaService,
         private tourService: ToursService,
-        private mailService: MailService
+        private mailService: MailService,
+        private stripeService: StripeService
     ) {}
 
-    async book(client: AddBookingDto, clientId: string) {
+    async book(client: AddBookingDto, user: UserPaylodDto) {
         if (!Object.values(monthsEnum).includes(client.date.month)) {
             throw new HttpException(
                 client.date.month + ' Not Found: date is not available',
                 404
             );
         }
-        const price = this.calculatePrice(client).toString();
+        const price = this.calculatePrice(client);
         const seats = client.adults + client.children;
         // TODO: Check if there are free seats left
         await this.tourService.bookSeats(client.tourId, seats);
+
+        const client_secret = await this.stripeService.charge(price);
+
         const bookingDetails = await this.prisma.booking.create({
             data: {
                 name: client.name,
                 email: client.email,
                 seats: seats,
                 message: client.message,
-                price: price,
+                price: price.toString(),
 
-                clientId: clientId
+                clientId: user.id
             }
         });
 
-        await this.mailService.sendUserConfirmation({
-            ...client,
-            price,
-            seats
-        });
-        return bookingDetails;
+        // const convertedPrice = price.toString();
+        // await this.mailService.sendUserConfirmation({
+        //     ...client,
+        //     price: convertedPrice,
+        //     seats
+        // });
+
+        return {
+            details: bookingDetails,
+            client_secret: client_secret
+        };
     }
 
     async cancel(bookingId: string) {

@@ -5,7 +5,6 @@ import { BookingModule } from './booking/booking.module';
 import { ToursModule } from './tours/tours.module';
 import { MailModule } from './mail/mail.module';
 import { ConfigModule } from '@nestjs/config';
-import { AccountController } from './account/account.controller';
 import { AccountModule } from './account/account.module';
 
 @Module({

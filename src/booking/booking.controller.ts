@@ -20,7 +20,7 @@ export class BookingController {
     @UseGuards(ClientAuthGuard)
     @Post('tour')
     async book(@Body() clientInfo: AddBookingDto, @Req() req: any) {
-        return await this.bookingService.book(clientInfo, req.user.id);
+        return await this.bookingService.book(clientInfo, req.user);
     }
 
     @Delete('cancel/:id')
