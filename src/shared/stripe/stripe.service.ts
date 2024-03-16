@@ -21,7 +21,7 @@ export class StripeService {
 
     async hook(req: any) {
         const endpointSecret =
-            'whsec_58ed531a3f73d750a8514e247bfebda844a68d30b5bac633fe5c3b22b818d6af';
+            'whsec_58ed';
         const sig = req.headers['stripe-signature'];
 
         let event;
